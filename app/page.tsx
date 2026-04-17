@@ -1,17 +1,46 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 
 export default function Home() {
-  // Variantes de animación para Framer Motion
+  const router = useRouter();
+  // NUEVO: Estado para controlar cuándo el usuario hace clic en "Empezar"
+  const [isExiting, setIsExiting] = useState(false);
+
+  // NUEVO: Función que intercepta el clic
+  const handleStartClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Evitamos que haga algo por defecto
+    setIsExiting(true); // Disparamos la animación de salida
+
+    // Esperamos 600ms (lo que dura la animación) y forzamos el cambio de ruta
+    setTimeout(() => {
+      router.push("/tester");
+    }, 600);
+  };
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2, // Retraso entre cada elemento que aparece
+        staggerChildren: 0.2,
         delayChildren: 0.3,
+      },
+    },
+    // NUEVO: La variante de salida.
+    // Aplicamos un desenfoque y un pequeño scale-down para dar profundidad
+    exit: {
+      opacity: 0,
+      scale: 0.95,
+      filter: "blur(10px)",
+      transition: {
+        duration: 0.5,
+        ease: "easeInOut",
+        staggerChildren: 0.1,
+        staggerDirection: -1, // Hace que los elementos desaparezcan de abajo hacia arriba
       },
     },
   };
@@ -27,31 +56,34 @@ export default function Home() {
         damping: 15,
       },
     },
+    // NUEVO: Que los textos se vayan hacia arriba al salir
+    exit: {
+      opacity: 0,
+      y: -20,
+      transition: { duration: 0.4, ease: "easeInOut" },
+    },
   };
 
   return (
-    // Fondo oscuro con luz radial súper sutil en el centro superior
     <div className="relative min-h-screen bg-zinc-950 flex flex-col items-center justify-center overflow-hidden selection:bg-zinc-800">
-      {/* Efecto de luz ambiental (Glow) */}
       <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-150 h-100 bg-zinc-600/20 blur-[120px] rounded-full pointer-events-none" />
-
-      {/* Grid de fondo ultra sutil para dar aspecto "técnico" */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
+      {/* NUEVO: Cambiamos animate="show" por un condicional. 
+        Si isExiting es true, pasa a la variante "exit". 
+      */}
       <motion.div
         className="relative z-10 flex flex-col items-center text-center px-6 max-w-3xl"
         variants={containerVariants}
         initial="hidden"
-        animate="show"
+        animate={isExiting ? "exit" : "show"}
       >
-        {/* Etiqueta superior animada */}
         <motion.div variants={itemVariants} className="mb-8">
           <span className="px-3 py-1 text-[10px] uppercase tracking-widest font-mono text-zinc-400 border border-zinc-800 rounded-full bg-zinc-900/50 backdrop-blur-sm">
             EmailRender Studio v1.0
           </span>
         </motion.div>
 
-        {/* Título principal */}
         <motion.div variants={itemVariants}>
           <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-zinc-100 mb-6">
             Escribe correos. <br />
@@ -59,7 +91,6 @@ export default function Home() {
           </h1>
         </motion.div>
 
-        {/* Subtítulo */}
         <motion.div variants={itemVariants}>
           <p className="text-base md:text-lg text-zinc-400 mb-10 max-w-xl mx-auto font-light leading-relaxed">
             El primer entorno de desarrollo minimalista que te muestra en tiempo
@@ -68,23 +99,18 @@ export default function Home() {
           </p>
         </motion.div>
 
-        {/* Botón de Acción (Call to Action) */}
         <motion.div variants={itemVariants}>
-          <Link
-            href="/tester"
-            className="group relative inline-flex items-center gap-2"
-          >
-            {/* Fondo de brillo del botón */}
+          {/* NUEVO: Reemplazamos el <Link> directo por un <button> que llama a nuestra función */}
+          <div className="group relative inline-flex items-center gap-2">
             <div className="absolute -inset-1 bg-white/20 blur-md rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-            {/* Botón en sí */}
             <motion.button
+              onClick={handleStartClick}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="relative px-8 py-3 bg-zinc-100 text-zinc-950 text-sm font-semibold rounded shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] transition-all flex items-center gap-2"
             >
               Empezar ahora
-              {/* Flechita que se mueve al hacer hover */}
               <svg
                 className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
                 fill="none"
@@ -99,15 +125,14 @@ export default function Home() {
                 />
               </svg>
             </motion.button>
-          </Link>
+          </div>
         </motion.div>
       </motion.div>
 
-      {/* Footer minimalista */}
+      {/* Footer minimalista: Le agregamos una variante para que desaparezca junto con el resto */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 1 }}
+        animate={isExiting ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
+        transition={isExiting ? { duration: 0.3 } : { delay: 1.5, duration: 1 }}
         className="absolute bottom-8 text-xs text-zinc-600 font-mono"
       >
         Created By{" "}
