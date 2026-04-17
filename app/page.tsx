@@ -80,7 +80,7 @@ export default function Home() {
       >
         <motion.div variants={itemVariants} className="mb-8">
           <span className="px-3 py-1 text-[10px] uppercase tracking-widest font-mono text-zinc-400 border border-zinc-800 rounded-full bg-zinc-900/50 backdrop-blur-sm">
-            EmailRender Studio v1.0
+            EmailRender Studio v0.0.1-alpha
           </span>
         </motion.div>
 
