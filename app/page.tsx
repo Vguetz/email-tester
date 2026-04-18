@@ -67,7 +67,7 @@ export default function Home() {
   return (
     <div className="relative min-h-screen bg-zinc-950 flex flex-col items-center justify-center overflow-hidden selection:bg-zinc-800">
       <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-150 h-100 bg-zinc-600/20 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px] pointer-events-none" />
 
       {/* NUEVO: Cambiamos animate="show" por un condicional. 
         Si isExiting es true, pasa a la variante "exit". 
