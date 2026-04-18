@@ -39,7 +39,7 @@ export default function PreviewPanel({ processedHtml, issues }: PreviewProps) {
 
           {/* Panel Flotante Restaurado */}
           <div
-            className={`absolute top-12 left-4 w-[400px] bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl z-50 flex flex-col overflow-hidden origin-top-left transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+            className={`absolute top-12 left-4 w-100 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl z-50 flex flex-col overflow-hidden origin-top-left transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
               isIssuesOpen
                 ? "opacity-100 scale-100 visible"
                 : "opacity-0 scale-90 invisible pointer-events-none"
@@ -69,7 +69,7 @@ export default function PreviewPanel({ processedHtml, issues }: PreviewProps) {
               </button>
             </div>
 
-            <div className="p-0 max-h-[300px] overflow-y-auto custom-scrollbar bg-zinc-950/50">
+            <div className="p-0 max-h-75 overflow-y-auto custom-scrollbar bg-zinc-950/50">
               {!issues || issues.length === 0 ? (
                 <div className="p-6 text-center text-xs text-zinc-500 italic">
                   Todo perfecto. Tu código está limpio.
