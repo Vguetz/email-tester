@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EmailTester",
+  title: "IMeru",
   description:
     "Test your Emails, broken or not, before sending them to your users.",
 };
