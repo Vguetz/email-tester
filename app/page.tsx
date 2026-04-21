@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Bomb, Target, Sparkles } from "lucide-react";
 import Link from "next/link";
+import PricingSection from "./components/PrincingSection";
 
 export default function Home() {
   const router = useRouter();
@@ -326,6 +327,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <PricingSection />
 
       {/* SECCIÓN 3: CTA FINAL */}
       <section className="relative z-20 py-24 md:py-40 px-6 text-center border-t border-zinc-900 bg-zinc-950 overflow-hidden">
