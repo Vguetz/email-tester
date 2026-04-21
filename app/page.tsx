@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Bomb, Target, Sparkles } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
@@ -52,9 +53,9 @@ export default function Home() {
     >
       {/* SECCIÓN 1: EL CINE (Scroll anclado) */}
       <section ref={heroRef} className="relative h-[250vh] w-full bg-zinc-950">
-        <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden [perspective:1200px]">
+        <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden perspective-distant">
           {/* Fondo de grid sutil */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-size-[40px_40px] pointer-events-none" />
 
           {/* Brillo dinámico */}
           <motion.div
@@ -76,7 +77,7 @@ export default function Home() {
             <span className="px-4 py-1.5 text-[10px] uppercase tracking-widest font-mono text-blue-400 border border-blue-500/30 rounded-full bg-blue-500/10 mb-4 md:mb-6 shadow-[0_0_20px_-5px_rgba(59,130,246,0.4)]">
               Presentando IMeru
             </span>
-            <h1 className="text-4xl sm:text-5xl lg:text-8xl font-extrabold tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500 leading-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-8xl font-extrabold tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-white to-zinc-500 leading-tight">
               Escribí código.
               <br />
               Nosotros lo rompemos.
@@ -99,7 +100,7 @@ export default function Home() {
               <span className="text-blue-400">.container</span>{" "}
               {"{ padding: 20px; }"}
             </div>
-            <div className="w-full h-1 bg-gradient-to-r from-blue-500 to-transparent rounded-full mt-2" />
+            <div className="w-full h-1 bg-linear-to-r from-blue-500 to-transparent rounded-full mt-2" />
           </motion.div>
 
           {/* WIDGET FLOTANTE DERECHO */}
@@ -135,7 +136,7 @@ export default function Home() {
             <div className="h-12 md:h-14 w-full bg-[#18181b] border-b border-zinc-800 flex items-center px-3 md:px-6 justify-between">
               <div className="flex items-center gap-3 md:gap-6">
                 <span className="text-xs md:text-sm font-semibold text-white tracking-tight truncate">
-                  EmailRender Studio
+                  IMeru Studio
                 </span>
                 {/* Oculto en móvil */}
                 <button className="hidden md:flex items-center gap-2 text-xs bg-zinc-800/50 border border-zinc-700/50 px-3 py-1.5 rounded-md text-zinc-300">
@@ -205,7 +206,7 @@ export default function Home() {
                       &nbsp;&nbsp;<span className="text-zinc-500">{"<"}</span>
                       <span className="text-blue-400">h1</span>
                       <span className="text-zinc-500">{">"}</span>
-                      <span className="text-zinc-300">Hola, Lucas</span>
+                      <span className="text-zinc-300">Hola, Usuario</span>
                       <span className="text-zinc-500">{"</"}</span>
                       <span className="text-blue-400">h1</span>
                       <span className="text-zinc-500">{">"}</span>
@@ -242,7 +243,7 @@ export default function Home() {
                   {/* Preview Content (El Canvas Blanco) */}
                   <div className="flex-1 bg-white p-4 md:p-8 text-black font-sans overflow-hidden">
                     <h1 className="text-xl md:text-3xl font-bold mb-2 md:mb-4 tracking-tight">
-                      Hola, Lucas
+                      Hola, Usuario
                     </h1>
                     <p className="text-xs md:text-sm mb-4 md:mb-6 text-zinc-800">
                       Este es un layout minimalista de dos columnas.
@@ -332,11 +333,11 @@ export default function Home() {
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-64 bg-blue-500/5 blur-[100px] pointer-events-none" />
 
         <h2 className="text-4xl md:text-7xl font-bold mb-8 md:mb-10 tracking-tight relative z-10">
-          Entrá al Studio.
+          Entrá a IMeru Studio.
         </h2>
         <button
           onClick={handleStartClick}
-          className="group relative px-8 md:px-10 py-4 md:py-5 bg-white text-zinc-950 font-bold text-base md:text-lg rounded-full overflow-hidden hover:scale-105 transition-transform duration-300 z-10 shadow-[0_0_40px_-10px_rgba(255,255,255,0.4)]"
+          className="group relative cursor-pointer px-8 md:px-10 py-4 md:py-5 bg-white text-zinc-950 font-bold text-base md:text-lg rounded-full overflow-hidden hover:scale-105 transition-transform duration-300 z-10 shadow-[0_0_40px_-10px_rgba(255,255,255,0.4)]"
         >
           <span className="relative z-10 flex items-center gap-2">
             Comenzar ahora
@@ -359,7 +360,9 @@ export default function Home() {
       </section>
 
       <footer className="relative z-20 py-6 md:py-8 text-center text-xs text-zinc-600 font-mono bg-zinc-950 border-t border-zinc-900/50">
-        Created By Lucas Gomez.
+        <Link href="https://linkedin.com/in/lucasgomezapp" target="_blank">
+          Created By <span className="underline">Lucas Gomez.</span>
+        </Link>
       </footer>
     </motion.div>
   );

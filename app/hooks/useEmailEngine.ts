@@ -8,7 +8,7 @@ export const TEMPLATES = {
     css: `.button {\n  background-color: #0070f3;\n  color: #ffffff;\n  padding: 12px 24px;\n  text-decoration: none;\n  border-radius: 5px;\n  display: inline-block;\n  font-family: sans-serif;\n}`,
   },
   layout: {
-    html: `<div class="container">\n  <h1>Bienvenido, Lucas</h1>\n  <p>Este es un layout minimalista de dos columnas.</p>\n  <table width="100%">\n    <tr>\n      <td class="col">Columna 1</td>\n      <td class="col">Columna 2</td>\n    </tr>\n  </table>\n</div>`,
+    html: `<div class="container">\n  <h1>Bienvenido, Usuario</h1>\n  <p>Este es un layout minimalista de dos columnas.</p>\n  <table width="100%">\n    <tr>\n      <td class="col">Columna 1</td>\n      <td class="col">Columna 2</td>\n    </tr>\n  </table>\n</div>`,
     css: `.container { padding: 20px; font-family: sans-serif; }\n.col { background: #f4f4f4; padding: 10px; border: 1px solid #ddd; }`,
   },
 };
