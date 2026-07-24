@@ -37,7 +37,10 @@ export default function Login() {
           email,
           password,
         });
-        if (error) throw error;
+        if (error) {
+          console.error("Error al iniciar sesión:", error);
+          throw error;
+        }
 
         router.refresh();
         router.push("/tester");

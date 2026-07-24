@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Bomb, Target, Sparkles } from "lucide-react";
 import Link from "next/link";
-import PricingSection from "./components/PrincingSection";
+import PricingSection from "./components/PricingSection";
 
 export default function Home() {
   const router = useRouter();

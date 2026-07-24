@@ -168,6 +168,7 @@ export default function PreviewPanel({ processedHtml, issues }: PreviewProps) {
           >
             <iframe
               srcDoc={processedHtml}
+              sandbox="allow-same-origin"
               className="w-full h-full border-none"
               title="Preview"
             />

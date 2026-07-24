@@ -18,6 +18,15 @@ export default function EmailTesterLogic() {
     isLoading,
     handleTemplateChange,
     exportCode,
+    projects,
+    currentProjectId,
+    projectName,
+    setProjectName,
+    isSaving,
+    saveError,
+    loadProject,
+    saveProject,
+    newProject,
   } = useEmailEngine();
 
   const editorOptions = {
@@ -34,6 +43,15 @@ export default function EmailTesterLogic() {
         setTargetClient={setTargetClient}
         exportCode={exportCode}
         handleTemplateChange={handleTemplateChange}
+        projects={projects}
+        currentProjectId={currentProjectId}
+        projectName={projectName}
+        setProjectName={setProjectName}
+        isSaving={isSaving}
+        saveError={saveError}
+        loadProject={loadProject}
+        saveProject={saveProject}
+        newProject={newProject}
       />
 
       <main className="flex-1 flex overflow-hidden">

@@ -1,17 +1,41 @@
 import { NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
 import juice from 'juice';
-import { CompatibilityIssue, EmailPayload } from '@/app/utils/interfaces';
+import { CompatibilityIssue, EmailPayload, TargetClient, CLIENT_LABELS } from '@/app/utils/interfaces';
+import { evaluateStyle, shouldStripHeadStyle } from '@/app/utils/rulesEngine';
+import { createClient } from '@/app/utils/supabase/server';
+
+const MAX_PAYLOAD_LENGTH = 300_000;
+const VALID_CLIENTS = new Set(Object.keys(CLIENT_LABELS));
 
 export async function POST(request: Request) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ success: false, error: 'No autenticado' }, { status: 401 });
+  }
+
   try {
     const body: EmailPayload = await request.json();
     const { html, css, targetClient } = body;
 
-    // Inicializamos el array donde recolectaremos los problemas
+    if (typeof html !== 'string' || typeof css !== 'string') {
+      return NextResponse.json({ success: false, error: 'Payload inválido' }, { status: 400 });
+    }
+    if (html.length + css.length > MAX_PAYLOAD_LENGTH) {
+      return NextResponse.json({ success: false, error: 'El código es demasiado grande' }, { status: 413 });
+    }
+    if (!VALID_CLIENTS.has(targetClient)) {
+      return NextResponse.json({ success: false, error: 'Cliente de correo no soportado' }, { status: 400 });
+    }
+    const client = targetClient as TargetClient;
+
     const issues: CompatibilityIssue[] = [];
 
-    let rawHtml = `
+    const rawHtml = `
       <html>
         <head>
           <style>${css}</style>
@@ -22,95 +46,30 @@ export async function POST(request: Request) {
       </html>
     `;
 
-    let processedHtml = rawHtml;
+    const inlined = juice(rawHtml);
+    const $ = cheerio.load(inlined);
 
-    if (targetClient === 'gmail') {
-      processedHtml = juice(rawHtml);
-      const $ = cheerio.load(processedHtml);
-      
+    if (shouldStripHeadStyle(client)) {
       $('style').remove();
-
-      $('*').each((_, element) => {
-        let styleAttr = $(element).attr('style');
-        if (styleAttr) {
-          // 1. DETECCIÓN (Antes de borrar)
-          // Usamos match para atrapar exactamente qué escribió el usuario
-          const positionMatch = styleAttr.match(/position:\s*(absolute|fixed|relative)/i);
-          if (positionMatch) {
-            issues.push({
-              property: 'position',
-              value: positionMatch[1],
-              message: 'Gmail ignora posiciones absolutas o relativas. Usá márgenes, padding o tablas para ubicar elementos.',
-              severity: 'error' // Error porque rompe la estructura
-            });
-          }
-
-          // 2. MUTILACIÓN
-          styleAttr = styleAttr.replace(/position:\s*(absolute|fixed|relative)\s*;?/gi, '');
-          $(element).attr('style', styleAttr.trim());
-        }
-      });
-      processedHtml = $.html();
-    } 
-    
-    // --- MOTOR DE OUTLOOK ---
-    else if (targetClient === 'outlook') {
-      processedHtml = juice(rawHtml);
-      const $ = cheerio.load(processedHtml);
-
-      $('*').each((_, element) => {
-        let styleAttr = $(element).attr('style');
-        
-        if (styleAttr) {
-          // 1. DETECCIÓN MULTIPLE
-          const displayMatch = styleAttr.match(/display:\s*(flex|grid|inline-flex)/i);
-          if (displayMatch) {
-            issues.push({
-              property: 'display',
-              value: displayMatch[1],
-              message: 'Outlook usa el motor de Word y no soporta Flexbox ni Grid. Estructurá tu layout usando etiquetas <table>.',
-              severity: 'error'
-            });
-          }
-
-          // Para border-radius solo comprobamos si existe, el valor exacto no importa tanto
-          if (/border-radius/i.test(styleAttr)) {
-            issues.push({
-              property: 'border-radius',
-              value: 'N/A',
-              message: 'Outlook no puede dibujar bordes redondeados. Los botones se verán cuadrados.',
-              severity: 'warning' // Warning porque el diseño se ve feo, pero no se rompe la lectura
-            });
-          }
-
-          const positionMatch = styleAttr.match(/position:\s*(absolute|fixed|relative)/i);
-          if (positionMatch) {
-             issues.push({
-              property: 'position',
-              value: positionMatch[1],
-              message: 'Outlook ignora el posicionamiento moderno.',
-              severity: 'error'
-            });
-          }
-
-          // 2. MUTILACIÓN AGRESIVA
-          styleAttr = styleAttr.replace(/display:\s*(flex|grid|inline-flex)\s*;?/gi, '');
-          styleAttr = styleAttr.replace(/border-radius:[^;]+;?/gi, '');
-          styleAttr = styleAttr.replace(/box-shadow:[^;]+;?/gi, '');
-          styleAttr = styleAttr.replace(/filter:[^;]+;?/gi, '');
-          styleAttr = styleAttr.replace(/transform:[^;]+;?/gi, '');
-          styleAttr = styleAttr.replace(/position:[^;]+;?/gi, '');
-
-          $(element).attr('style', styleAttr.trim());
-        }
-      });
-
-      processedHtml = $.html();
     }
 
-    // Retornamos el HTML y nuestro array de problemas detectados
-    return NextResponse.json({ success: true, processedHtml, issues });
+    $('*').each((_, element) => {
+      const styleAttr = $(element).attr('style');
+      if (!styleAttr) return;
 
+      const { cleanedStyle, issues: elementIssues } = evaluateStyle(styleAttr, client);
+      issues.push(...elementIssues);
+
+      if (cleanedStyle) {
+        $(element).attr('style', cleanedStyle);
+      } else {
+        $(element).removeAttr('style');
+      }
+    });
+
+    const processedHtml = $.html();
+
+    return NextResponse.json({ success: true, processedHtml, issues });
   } catch (error) {
     console.error('Error procesando el correo:', error);
     return NextResponse.json(

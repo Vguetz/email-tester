@@ -2,15 +2,25 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { TemplateKey } from "../hooks/useEmailEngine";
 import { createClient } from "@/app/utils/supabase/client";
-import { User, LogOut, Settings } from "lucide-react";
+import { User, LogOut, Settings, Save, FolderOpen, FilePlus } from "lucide-react";
 import Link from "next/link";
+import { Project, TargetClient, CLIENT_LABELS } from "../utils/interfaces";
 
 interface HeaderProps {
   isLoading: boolean;
-  targetClient: "gmail" | "outlook";
-  setTargetClient: (client: "gmail" | "outlook") => void;
+  targetClient: TargetClient;
+  setTargetClient: (client: TargetClient) => void;
   exportCode: () => void;
   handleTemplateChange: (key: TemplateKey) => void;
+  projects: Project[];
+  currentProjectId: string | null;
+  projectName: string;
+  setProjectName: (name: string) => void;
+  isSaving: boolean;
+  saveError: string | null;
+  loadProject: (id: string) => void;
+  saveProject: () => void;
+  newProject: () => void;
 }
 
 export default function TesterHeader({
@@ -19,8 +29,18 @@ export default function TesterHeader({
   setTargetClient,
   exportCode,
   handleTemplateChange,
+  projects,
+  currentProjectId,
+  projectName,
+  setProjectName,
+  isSaving,
+  saveError,
+  loadProject,
+  saveProject,
+  newProject,
 }: HeaderProps) {
   const [isTemplateOpen, setIsTemplateOpen] = useState(false);
+  const [isProjectsOpen, setIsProjectsOpen] = useState(false);
   const [isTargetOpen, setIsTargetOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -53,11 +73,88 @@ export default function TesterHeader({
 
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-zinc-900 border-b border-zinc-800 relative z-50">
-      {/* LADO IZQUIERDO: Título y Plantillas */}
+      {/* LADO IZQUIERDO: Título, Proyecto y Plantillas */}
       <div className="flex items-center gap-6">
         <h1 className="text-sm font-semibold tracking-tight text-zinc-200">
           IMeru Studio
         </h1>
+
+        <input
+          value={projectName}
+          onChange={(e) => setProjectName(e.target.value)}
+          className="text-xs bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-zinc-600 focus:border-zinc-600 px-3 py-1.5 rounded-md text-zinc-300 outline-none w-40 transition-colors"
+        />
+
+        <button
+          onClick={() => saveProject()}
+          disabled={isSaving}
+          title={saveError ?? undefined}
+          className={`flex items-center gap-2 text-xs px-3 py-1.5 rounded-md transition-all duration-200 outline-none ${
+            saveError
+              ? "bg-red-500/10 text-red-400 border border-red-500/30"
+              : "bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-zinc-600 text-zinc-300"
+          } disabled:opacity-60`}
+        >
+          <Save className="w-3 h-3" />
+          {isSaving ? "Guardando..." : currentProjectId ? "Guardado" : "Guardar"}
+        </button>
+
+        <button
+          onClick={newProject}
+          className="flex items-center gap-2 text-xs bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-zinc-600 px-3 py-1.5 rounded-md text-zinc-300 transition-all duration-200 outline-none"
+        >
+          <FilePlus className="w-3 h-3" />
+          Nuevo
+        </button>
+
+        {/* CUSTOM SELECT: Mis Proyectos */}
+        <div className="relative">
+          <button
+            onClick={() => setIsProjectsOpen(!isProjectsOpen)}
+            onBlur={() => setTimeout(() => setIsProjectsOpen(false), 200)}
+            className="flex items-center gap-2 text-xs bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-zinc-600 px-3 py-1.5 rounded-md text-zinc-300 transition-all duration-200 outline-none focus:ring-2 focus:ring-zinc-700"
+          >
+            <FolderOpen className="w-3 h-3 text-zinc-500" />
+            Mis Proyectos
+            <svg
+              className={`w-3 h-3 text-zinc-500 transition-transform duration-300 ease-out ${isProjectsOpen ? "rotate-180" : "rotate-0"}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <div
+            className={`absolute top-full left-0 mt-2 w-56 max-h-72 overflow-y-auto bg-zinc-800 border border-zinc-700 rounded-md shadow-2xl overflow-x-hidden origin-top-left transition-all duration-200 ease-out ${isProjectsOpen ? "opacity-100 scale-100 translate-y-0 visible" : "opacity-0 scale-95 -translate-y-2 invisible"}`}
+          >
+            <div className="flex flex-col py-1">
+              {projects.length === 0 ? (
+                <span className="px-4 py-2 text-xs text-zinc-500 italic">
+                  Todavía no guardaste proyectos.
+                </span>
+              ) : (
+                projects.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => {
+                      loadProject(p.id);
+                      setIsProjectsOpen(false);
+                    }}
+                    className={`text-left px-4 py-2 text-xs transition-colors truncate ${
+                      p.id === currentProjectId
+                        ? "bg-zinc-700 text-white"
+                        : "text-zinc-300 hover:bg-zinc-700 hover:text-white"
+                    }`}
+                  >
+                    {p.name}
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
 
         {/* CUSTOM SELECT: Plantillas */}
         <div className="relative">
@@ -147,7 +244,7 @@ export default function TesterHeader({
           >
             Target:{" "}
             <span className="font-medium text-white">
-              {targetClient === "gmail" ? "Gmail" : "Outlook"}
+              {CLIENT_LABELS[targetClient]}
             </span>
             <svg
               className={`w-3 h-3 transition-transform duration-300 ease-out ${isTargetOpen ? "-rotate-180" : "rotate-0"}`}
@@ -166,33 +263,24 @@ export default function TesterHeader({
 
           {/* Menú Target */}
           <div
-            className={`absolute  top-full right-4 mt-2 w-36 bg-zinc-800 border border-zinc-700 rounded-md shadow-2xl overflow-hidden origin-top-right transition-all duration-200 ease-out ${isTargetOpen ? "opacity-100 scale-100 cursor-pointer translate-y-0 visible" : "opacity-0 scale-95 -translate-y-2 cursor-pointer invisible"}`}
+            className={`absolute top-full right-4 mt-2 w-44 max-h-80 overflow-y-auto bg-zinc-800 border border-zinc-700 rounded-md shadow-2xl origin-top-right transition-all duration-200 ease-out ${isTargetOpen ? "opacity-100 scale-100 cursor-pointer translate-y-0 visible" : "opacity-0 scale-95 -translate-y-2 cursor-pointer invisible"}`}
           >
-            <div className="flex  flex-col py-1">
-              <button
-                onClick={() => {
-                  setTargetClient("gmail");
-                  setIsTargetOpen(false);
-                }}
-                className={`text-left cursor-pointer px-4 py-2 text-xs transition-colors flex items-center justify-between ${targetClient === "gmail" ? "bg-zinc-700 text-white" : "text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-200"}`}
-              >
-                Gmail
-                {targetClient === "gmail" && (
-                  <div className="w-1 h-1 rounded-full bg-blue-400" />
-                )}
-              </button>
-              <button
-                onClick={() => {
-                  setTargetClient("outlook");
-                  setIsTargetOpen(false);
-                }}
-                className={`text-left px-4 py-2 text-xs cursor-pointer transition-colors flex items-center justify-between ${targetClient === "outlook" ? "bg-zinc-700 text-white" : "text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-200"}`}
-              >
-                Outlook
-                {targetClient === "outlook" && (
-                  <div className="w-1 h-1 rounded-full bg-blue-400" />
-                )}
-              </button>
+            <div className="flex flex-col py-1">
+              {(Object.entries(CLIENT_LABELS) as [TargetClient, string][]).map(([id, label]) => (
+                <button
+                  key={id}
+                  onClick={() => {
+                    setTargetClient(id);
+                    setIsTargetOpen(false);
+                  }}
+                  className={`text-left cursor-pointer px-4 py-2 text-xs transition-colors flex items-center justify-between ${targetClient === id ? "bg-zinc-700 text-white" : "text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-200"}`}
+                >
+                  {label}
+                  {targetClient === id && (
+                    <div className="w-1 h-1 rounded-full bg-blue-400 shrink-0 ml-2" />
+                  )}
+                </button>
+              ))}
             </div>
           </div>
         </div>

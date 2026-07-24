@@ -1,0 +1,82 @@
+[
+  {
+    "id": "position",
+    "property": "position",
+    "match": { "type": "property-value", "values": ["absolute", "fixed", "relative"] },
+    "clients": {
+      "gmail": { "support": "none", "action": "strip", "severity": "error", "message": "Gmail ignora posiciones absolutas o relativas. Usá márgenes, padding o tablas para ubicar elementos." },
+      "outlook-2016-2019": { "support": "none", "action": "strip", "severity": "error", "message": "Outlook usa el motor de Word y no soporta posicionamiento moderno. Estructurá el layout con tablas." },
+      "outlook-com": { "support": "partial", "action": "warn-only", "severity": "warning", "message": "Outlook.com soporta position de forma inconsistente entre temas; evitalo para layouts críticos." },
+      "gmail-ios": { "support": "none", "action": "strip", "severity": "error", "message": "La app de Gmail en iOS ignora el posicionamiento absoluto/relativo, igual que Gmail web." },
+      "gmail-android": { "support": "none", "action": "strip", "severity": "error", "message": "La app de Gmail en Android ignora el posicionamiento absoluto/relativo, igual que Gmail web." },
+      "yahoo-mail": { "support": "partial", "action": "warn-only", "severity": "warning", "message": "Yahoo Mail soporta position de forma limitada; probá con tablas como respaldo." },
+      "samsung-mail": { "support": "none", "action": "strip", "severity": "error", "message": "Samsung Mail no soporta posicionamiento moderno de forma confiable." }
+    }
+  },
+  {
+    "id": "display-flex-grid",
+    "property": "display",
+    "match": { "type": "property-value", "values": ["flex", "grid", "inline-flex"] },
+    "clients": {
+      "outlook-2016-2019": { "support": "none", "action": "strip", "severity": "error", "message": "Outlook usa el motor de Word y no soporta Flexbox ni Grid. Estructurá tu layout usando etiquetas <table>." },
+      "outlook-com": { "support": "none", "action": "strip", "severity": "error", "message": "Outlook.com tampoco soporta Flexbox ni Grid de forma consistente." },
+      "gmail": { "support": "partial", "action": "warn-only", "severity": "warning", "message": "Gmail soporta Flexbox de forma parcial e inconsistente; no confíes en él para layouts críticos." },
+      "gmail-ios": { "support": "partial", "action": "warn-only", "severity": "warning", "message": "La app de Gmail en iOS soporta Flexbox de forma parcial." },
+      "gmail-android": { "support": "partial", "action": "warn-only", "severity": "warning", "message": "La app de Gmail en Android soporta Flexbox de forma parcial." },
+      "yahoo-mail": { "support": "none", "action": "strip", "severity": "error", "message": "Yahoo Mail no soporta Flexbox ni Grid." },
+      "samsung-mail": { "support": "none", "action": "strip", "severity": "error", "message": "Samsung Mail no soporta Flexbox ni Grid." }
+    }
+  },
+  {
+    "id": "border-radius",
+    "property": "border-radius",
+    "match": { "type": "property" },
+    "clients": {
+      "outlook-2016-2019": { "support": "none", "action": "strip", "severity": "warning", "message": "Outlook no puede dibujar bordes redondeados. Los botones se verán cuadrados." },
+      "outlook-com": { "support": "partial", "action": "warn-only", "severity": "warning", "message": "Outlook.com soporta border-radius de forma inconsistente entre la vista web y de escritorio." },
+      "samsung-mail": { "support": "none", "action": "strip", "severity": "warning", "message": "Versiones antiguas de Samsung Mail no soportan bordes redondeados." }
+    }
+  },
+  {
+    "id": "box-shadow",
+    "property": "box-shadow",
+    "match": { "type": "property" },
+    "clients": {
+      "outlook-2016-2019": { "support": "none", "action": "strip", "severity": "error", "message": "El motor de Word de Outlook no soporta box-shadow en absoluto." },
+      "outlook-com": { "support": "none", "action": "strip", "severity": "warning", "message": "Outlook.com no renderiza box-shadow de forma confiable." },
+      "gmail": { "support": "partial", "action": "warn-only", "severity": "warning", "message": "Gmail soporta box-shadow de forma parcial; puede no aparecer en todos los temas." },
+      "gmail-ios": { "support": "partial", "action": "warn-only", "severity": "warning", "message": "La app de Gmail en iOS soporta box-shadow de forma parcial." },
+      "gmail-android": { "support": "partial", "action": "warn-only", "severity": "warning", "message": "La app de Gmail en Android soporta box-shadow de forma parcial." },
+      "yahoo-mail": { "support": "none", "action": "strip", "severity": "warning", "message": "Yahoo Mail no soporta box-shadow." },
+      "samsung-mail": { "support": "none", "action": "strip", "severity": "warning", "message": "Samsung Mail no soporta box-shadow." }
+    }
+  },
+  {
+    "id": "filter",
+    "property": "filter",
+    "match": { "type": "property" },
+    "clients": {
+      "outlook-2016-2019": { "support": "none", "action": "strip", "severity": "error", "message": "El motor de Word de Outlook no soporta la propiedad filter." },
+      "outlook-com": { "support": "none", "action": "strip", "severity": "error", "message": "Outlook.com no soporta la propiedad filter." },
+      "gmail": { "support": "none", "action": "strip", "severity": "warning", "message": "Gmail no soporta la propiedad filter." },
+      "gmail-ios": { "support": "none", "action": "strip", "severity": "warning", "message": "La app de Gmail en iOS no soporta la propiedad filter." },
+      "gmail-android": { "support": "none", "action": "strip", "severity": "warning", "message": "La app de Gmail en Android no soporta la propiedad filter." },
+      "yahoo-mail": { "support": "none", "action": "strip", "severity": "warning", "message": "Yahoo Mail no soporta la propiedad filter." },
+      "samsung-mail": { "support": "none", "action": "strip", "severity": "warning", "message": "Samsung Mail no soporta la propiedad filter." }
+    }
+  },
+  {
+    "id": "transform",
+    "property": "transform",
+    "match": { "type": "property" },
+    "clients": {
+      "outlook-2016-2019": { "support": "none", "action": "strip", "severity": "error", "message": "El motor de Word de Outlook no soporta transform." },
+      "outlook-com": { "support": "none", "action": "strip", "severity": "error", "message": "Outlook.com no soporta transform." },
+      "gmail": { "support": "partial", "action": "warn-only", "severity": "warning", "message": "Gmail soporta transform de forma parcial e inconsistente." },
+      "gmail-ios": { "support": "partial", "action": "warn-only", "severity": "warning", "message": "La app de Gmail en iOS soporta transform de forma parcial." },
+      "gmail-android": { "support": "partial", "action": "warn-only", "severity": "warning", "message": "La app de Gmail en Android soporta transform de forma parcial." },
+      "yahoo-mail": { "support": "none", "action": "strip", "severity": "error", "message": "Yahoo Mail no soporta transform." },
+      "samsung-mail": { "support": "none", "action": "strip", "severity": "error", "message": "Samsung Mail no soporta transform." }
+    }
+  }
+]
